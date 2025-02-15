@@ -14,8 +14,10 @@ class Board
     @player_two_piece = player_two_piece
   end
 
+  attr_reader :columns, :player_one_piece, :player_two_piece
+
   def add_piece(column_idx, player_piece)
-    column = @columns[column_idx]
+    column = columns[column_idx]
 
     highest_filled_row_idx = 0
 
@@ -32,5 +34,15 @@ class Board
 
   def warn_full_column
     puts 'This column is full. You cannot add a piece here.'.red.bg(:silver)
+  end
+
+  def display
+    6.times do |row_idx|
+      print '|'
+      columns.each do |column|
+        print column[row_idx].nil? ? '   |' : " #{column[row_idx]} |"
+      end
+      print "\n——————————————————————————————\n"
+    end
   end
 end
