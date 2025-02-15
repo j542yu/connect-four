@@ -16,7 +16,7 @@ class Board
 
   attr_reader :columns, :player_one_piece, :player_two_piece
 
-  def add_piece(column_idx, player_piece)
+  def add_piece(column_idx, player_piece) # rubocop:disable Metrics/MethodLength
     column = columns[column_idx]
 
     highest_filled_row_idx = 0
@@ -25,10 +25,11 @@ class Board
 
     if highest_filled_row_idx.zero?
       warn_full_column
-      false
+      -1 # out of bounds idx to show failed addition of piece
     else
-      column[highest_filled_row_idx - 1] = player_piece
-      true
+      row_idx = highest_filled_row_idx - 1
+      column[row_idx] = player_piece
+      row_idx
     end
   end
 

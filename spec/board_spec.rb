@@ -10,23 +10,24 @@ describe Board do
 
     context 'when column is empty' do
       subject(:board_empty) { Board.new }
+      let(:bottom_row_idx) { 5 }
 
       it 'adds piece to bottom row' do
         board_empty.add_piece(column_idx, current_player_piece)
 
         column = board_empty.columns[column_idx]
-        bottom_row_idx = 5
         expect(column[bottom_row_idx]).to eq(current_player_piece)
       end
 
-      it 'returns true for successfully adding piece' do
-        expect(board_empty.add_piece(column_idx, current_player_piece)).to eq(true)
+      it 'returns bottom row idx in which piece was added' do
+        expect(board_empty.add_piece(column_idx, current_player_piece)).to eq(bottom_row_idx)
       end
     end
 
     context 'when column already has four pieces' do
       subject(:board_four_filled) { Board.new }
       let(:column) { board_four_filled.columns[column_idx] }
+      let(:second_row_idx) { 1 }
 
       before do
         total_rows = 5 # indexed from 0
@@ -37,18 +38,18 @@ describe Board do
 
       it 'adds piece to second row' do
         board_four_filled.add_piece(column_idx, current_player_piece)
-        second_row_idx = 1
+
         expect(column[second_row_idx]).to eq(current_player_piece)
+      end
+
+      it 'returns second row idx in which piece was added' do
+        expect(board_four_filled.add_piece(column_idx, current_player_piece)).to eq(second_row_idx)
       end
 
       it 'does not change previously placed pieces' do
         board_four_filled.add_piece(column_idx, current_player_piece)
         third_row_idx = 2 # random previously filled slot
         expect(column[third_row_idx]).to eq(placeholder_piece)
-      end
-
-      it 'returns true for successfully adding piece' do
-        expect(board_four_filled.add_piece(column_idx, current_player_piece)).to eq(true)
       end
     end
 
@@ -73,8 +74,8 @@ describe Board do
         expect(column[third_row_idx]).to eq(placeholder_piece)
       end
 
-      it 'returns false for failing to add piece' do
-        expect(board_full.add_piece(column_idx, current_player_piece)).to eq(false)
+      it 'returns -1 for failing to add piece' do
+        expect(board_full.add_piece(column_idx, current_player_piece)).to eq(-1)
       end
     end
   end
@@ -161,6 +162,33 @@ describe Board do
         HEREDOC
 
         expect { board_full.display }.to output(expected_output).to_stdout
+      end
+    end
+  end
+
+  describe '#four_in_a_row?' do
+    context 'when player has four horizontal pieces in a row' do
+      xit 'returns true' do
+      end
+    end
+
+    context 'when player has four vertical pieces in a row' do
+      xit 'returns true' do
+      end
+    end
+
+    context 'when player has four diagnoal pieces in a row' do
+      xit 'returns true' do
+      end
+    end
+
+    context 'when player has three horizontal in a row and one vertical' do
+      xit 'returns false' do
+      end
+    end
+
+    context 'when player has four diagonal in a row but not in a straight line (^ shape)' do
+      xit 'returns false' do
       end
     end
   end
