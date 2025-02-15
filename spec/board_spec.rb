@@ -15,7 +15,7 @@ describe Board do
       it 'adds piece to bottom row' do
         board_empty.add_piece(column_idx, current_player_piece)
 
-        column = board_empty.columns[column_idx]
+        column = board_empty.instance_variable_get(:@columns)[column_idx]
         expect(column[bottom_row_idx]).to eq(current_player_piece)
       end
 
@@ -26,7 +26,7 @@ describe Board do
 
     context 'when column already has four pieces' do
       subject(:board_four_filled) { Board.new }
-      let(:column) { board_four_filled.columns[column_idx] }
+      let(:column) { board_four_filled.instance_variable_get(:@columns)[column_idx] }
       let(:second_row_idx) { 1 }
 
       before do
@@ -55,7 +55,7 @@ describe Board do
 
     context 'when column is full' do
       subject(:board_full) { Board.new }
-      let(:column) { board_full.columns[column_idx] }
+      let(:column) { board_full.instance_variable_get(:@columns)[column_idx] }
 
       before do
         6.times do |row_idx|
@@ -107,7 +107,7 @@ describe Board do
       it 'prints correct partially filled board' do
         board_partially_filled = Board.new
 
-        columns = board_partially_filled.columns
+        columns = board_partially_filled.instance_variable_get(:@columns)
 
         random_column_idxs = [0, 2, 5, 6]
 
@@ -138,7 +138,7 @@ describe Board do
       it 'prints full board' do
         board_full = Board.new
 
-        columns = board_full.columns
+        columns = board_full.instance_variable_get(:@columns)
 
         columns.each_with_index do |column, column_idx|
           column.each_index do |row_idx|
@@ -168,27 +168,116 @@ describe Board do
 
   describe '#four_in_a_row?' do
     context 'when player has four horizontal pieces in a row' do
-      xit 'returns true' do
+      it 'returns true' do
+        board_horizontal = Board.new
+        columns = board_horizontal.instance_variable_get(:@columns)
+
+        random_row_idx = 4
+        random_column_idxs = [3, 4, 5, 6]
+
+        random_column_idxs.each do |random_column_idx|
+          columns[random_column_idx][random_row_idx] = current_player_piece
+        end
+
+        # picked random move as 'last' since player wouldn't always draw continuous line in game
+        last_move = [random_column_idxs[2], random_row_idx]
+
+        expect(board_horizontal.four_in_a_row?(last_move, current_player_piece)).to eq(true)
       end
     end
 
     context 'when player has four vertical pieces in a row' do
-      xit 'returns true' do
+      it 'returns true' do
+        board_vertical = Board.new
+        columns = board_vertical.instance_variable_get(:@columns)
+
+        random_column_idx = 2
+        random_row_idxs = [0, 1, 2, 3]
+
+        random_row_idxs.each do |random_row_idx|
+          columns[random_column_idx][random_row_idx] = current_player_piece
+        end
+
+        # unlike the other tests, the last move is actually last since can only stack vertical pieces one by one
+        last_move = [random_column_idx, random_row_idxs[0]]
+
+        expect(board_vertical.four_in_a_row?(last_move, current_player_piece)).to eq(true)
       end
     end
 
-    context 'when player has four diagnoal pieces in a row' do
-      xit 'returns true' do
+    context 'when player has four right-to-left (↘ ↖) diagnoal pieces in a row' do
+      it 'returns true' do
+        board_right_to_left = Board.new
+        columns = board_right_to_left.instance_variable_get(:@columns)
+
+        diagonal_column_idxs = [2, 3, 4, 5]
+        diagnoal_row_idxs = [0, 1, 2, 3]
+
+        4.times do |i|
+          columns[diagonal_column_idxs[i]][diagnoal_row_idxs[i]] = current_player_piece
+        end
+
+        # picked random move as 'last' since player wouldn't always draw continuous line in game
+        last_move = [diagonal_column_idxs[2], diagnoal_row_idxs[2]]
+
+        expect(board_right_to_left.four_in_a_row?(last_move, current_player_piece)).to eq(true)
       end
     end
 
-    context 'when player has three horizontal in a row and one vertical' do
-      xit 'returns false' do
+    context 'when player has four left-to-right (↙ ↗) diagnoal pieces in a row' do
+      it 'returns true' do
+        board_left_to_right = Board.new
+        columns = board_left_to_right.instance_variable_get(:@columns)
+
+        diagonal_column_idxs = [2, 3, 4, 5]
+        diagnoal_row_idxs = [3, 2, 1, 0]
+
+        4.times do |i|
+          columns[diagonal_column_idxs[i]][diagnoal_row_idxs[i]] = current_player_piece
+        end
+
+        # picked random move as 'last' since player wouldn't always draw continuous line in game
+        last_move = [diagonal_column_idxs[2], diagnoal_row_idxs[2]]
+
+        expect(board_left_to_right.four_in_a_row?(last_move, current_player_piece)).to eq(true)
+      end
+    end
+
+    context 'when player has three horizontal in a row and one vertical (L shape)' do
+      it 'returns false' do
+        board_l = Board.new
+        columns = board_l.instance_variable_get(:@columns)
+
+        random_row_idxs = [4, 4, 4, 3]
+        random_column_idxs = [3, 4, 5, 6]
+
+        4.times do |i|
+          columns[random_column_idxs[i]][random_row_idxs[i]] = current_player_piece
+        end
+
+        # picked random move as 'last' since player wouldn't always draw continuous line in game
+        last_move = [random_column_idxs[2], random_row_idxs[2]]
+
+        expect(board_l.four_in_a_row?(last_move, current_player_piece)).to eq(false)
       end
     end
 
     context 'when player has four diagonal in a row but not in a straight line (^ shape)' do
-      xit 'returns false' do
+      it 'returns false' do
+        board_triangle = Board.new
+        columns = board_triangle.instance_variable_get(:@columns)
+
+        diagonal_column_idxs = [0, 1, 2, 3]
+        diagnoal_row_idxs = [2, 1, 0, 1]
+
+        4.times do |i|
+          columns[diagonal_column_idxs[i]][diagnoal_row_idxs[i]] = current_player_piece
+        end
+
+        # picked random move as 'last' since player wouldn't always draw continuous line in game
+        last_move = [diagonal_column_idxs[2], diagnoal_row_idxs[2]]
+
+        expect(board_triangle.four_in_a_row?(last_move, current_player_piece)).to eq(false)
       end
     end
   end
