@@ -15,6 +15,7 @@ class Player
 
   def ask_for_name(player_id)
     puts "Player #{player_id}, what's your name?"
+    print '=> '
     gets.chomp
   end
 end
