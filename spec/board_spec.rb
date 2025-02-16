@@ -25,30 +25,30 @@ describe Board do
       end
     end
 
-    context 'when column already has four pieces' do
-      subject(:board_four_filled) { described_class.new }
-      let(:column) { board_four_filled.instance_variable_get(:@columns)[column_idx] }
-      let(:second_row_idx) { 1 }
+    context 'when column already has five pieces' do
+      subject(:board_five_filled) { described_class.new }
+      let(:column) { board_five_filled.instance_variable_get(:@columns)[column_idx] }
+      let(:first_row_idx) { 0 }
 
       before do
         total_rows = 5 # indexed from 0
-        4.times do |row_idx|
+        5.times do |row_idx|
           column[total_rows - row_idx] = placeholder_piece
         end
       end
 
-      it 'adds piece to second row' do
-        board_four_filled.add_piece(column_idx, current_player_piece)
+      it 'adds piece to first row' do
+        board_five_filled.add_piece(column_idx, current_player_piece)
 
-        expect(column[second_row_idx]).to eq(current_player_piece)
+        expect(column[first_row_idx]).to eq(current_player_piece)
       end
 
-      it 'returns second row idx in which piece was added' do
-        expect(board_four_filled.add_piece(column_idx, current_player_piece)).to eq(second_row_idx)
+      it 'returns first row idx in which piece was added' do
+        expect(board_five_filled.add_piece(column_idx, current_player_piece)).to eq(first_row_idx)
       end
 
       it 'does not change previously placed pieces' do
-        board_four_filled.add_piece(column_idx, current_player_piece)
+        board_five_filled.add_piece(column_idx, current_player_piece)
         third_row_idx = 2 # random previously filled slot
         expect(column[third_row_idx]).to eq(placeholder_piece)
       end
