@@ -15,6 +15,7 @@ class Game
     @players = players
     @board = board
     @current_player_id = 0
+    @last_move = nil
     @winner = nil
   end
 
@@ -22,6 +23,7 @@ class Game
     announce_intro
     until game_over?
       current_player_make_move
+      check_for_winner
       switch_players
     end
     announce_conclusion
@@ -29,16 +31,12 @@ class Game
 
   private
 
-  def announce_intro
-    puts <<~HEREDOC
-      Welcome to Connect Four!
+  def check_for_winner
+    @winner = @board.four_in_a_row?(@last_move, current_player.piece) ? current_player : nil
+  end
 
-      In this game, each player takes turn dropping down their game piece in one of the 7 columns.
-
-      The first to get four in a straight line wins! This includes horizontal, vertical, and diagonal lines.
-    HEREDOC
-
-    @board.display
+  def game_over?
+    @winner || @board.full?
   end
 
   def current_player
@@ -52,16 +50,13 @@ class Game
     show_move_result(column_idx)
   end
 
-  def display_turn_info
-    puts 'Here is how the current board looks:'
-    @board.display
-    name = current_player.name
-    puts "#{name}, enter the column number in which you want to drop your piece!"
+  def switch_players
+    @current_player_id = 1 - @current_player_id
   end
 
   def ask_for_valid_column
     loop do
-      print '=>'
+      print '=> '
       column_idx = gets.chomp.to_i - 1
       return column_idx if column_idx.between?(0, 6)
 
@@ -70,39 +65,59 @@ class Game
   end
 
   def add_piece(column_idx)
-    until @board.add_piece(column_idx, current_player.piece).positive?
+    row_idx = @board.add_piece(column_idx, current_player.piece)
+    while row_idx.negative?
       warn_full_column
       column_idx = ask_for_valid_column
+      row_idx = @board.add_piece(column_idx, current_player.piece)
     end
+    @last_move = [column_idx, row_idx]
   end
 
   def show_move_result(column_idx)
-    puts "You dropped your piece in column #{column_idx + 1}!"
+    puts "\n#{current_player.name} dropped their piece in column #{column_idx + 1}!"
     @board.display
   end
 
   def warn_invalid_column_idx
+    puts '' # add new line without highlighting entire line when using Rainbow gem
     puts 'Invalid column number. Please choose an integer number from 1 to 7.'.red.bg(:silver)
   end
 
   def warn_full_column
+    puts '' # add new line without highlighting entire line when using Rainbow gem
     puts 'This column is full, you cannot add a piece here. Please pick another column!'.red.bg(:silver)
   end
 
-  def switch_players
-    @current_player_id = 1 - @current_player_id
+  def display_turn_info
+    puts "#{current_player.name}, enter the column number in which you want to drop your piece!".blue
   end
 
-  def game_over?
-    @winner = @players.find { |player| @board.four_in_a_row?(player) }
-    @winner || @board.full?
+  def announce_intro
+    intro = <<~HEREDOC
+
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      Welcome to Connect Four!
+
+      In this game, each player takes turn dropping down their game piece in one of the 7 columns.
+
+      The first to get four in a row in a straight line wins! This includes horizontal, vertical, and diagonal lines.
+
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    HEREDOC
+
+    puts intro.green
+    puts 'Here is what the board looks like:'
+    @board.display
   end
 
   def announce_conclusion
     if @winner.nil?
-      puts 'Its a tie! There are no more slots left and no player has won.'.green
+      puts "\nIts a tie! There are no more slots left and no player has won.".green
     else
-      puts "Yay, #{winner.name} won!!! Cake for the winner 🎂 :>".green
+      puts "\nYay, #{@winner.name} won!!! Cake for the winner 🎂 :>".green
     end
   end
 end
