@@ -16,8 +16,6 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - 'spec/*'
-    - 'spec_answers/*'
 Layout/LineLength:
   Exclude:
     - 'spec/*'
-    - 'spec_answers/*'
