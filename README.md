@@ -24,10 +24,6 @@ This implementation is written in Ruby (version 3.3.5).
 ### **Running Remotely**
 Use a remote environment like [Replit.com](https://replit.com) by uploading the project files and running `ruby main.rb`.
 
-How to Play
-
-Connect Four is a strategic game where players take turns placing their pieces into a 7-column, 6-row grid. The first player to align four pieces in a row—vertically, horizontally, or diagonally—wins the game.
-
 ## Game Rules
 
 * The game starts with an empty 7x6 board.
