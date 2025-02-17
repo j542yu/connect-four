@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'game'
+require_relative 'lib/game'
 
 print "Hey there, want to play Connect Four? (y/n)\n=> "
 input = nil
